@@ -1,0 +1,8 @@
+camel:
+
+    springboot:
+         main-run-controller: true
+
+    component:
+        kafka:
+            brokers: localhost:9092

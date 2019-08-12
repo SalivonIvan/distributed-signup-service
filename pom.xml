@@ -11,6 +11,7 @@
 
     <modules>
         <module>signup-microservice</module>
+        <module>persistence-microservice</module>
     </modules>
 
 </project>

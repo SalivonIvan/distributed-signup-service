@@ -3,6 +3,7 @@ package io.newage.signup.route;
 import io.newage.signup.domain.SignupRequest;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.kafka.KafkaConstants;
+import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.restlet.data.MediaType;
 import org.springframework.stereotype.Component;
@@ -38,8 +39,10 @@ public class SignupRoute extends RouteBuilder {
                     SignupRequest signupRequest = exchange.getIn().getBody(SignupRequest.class);
                     signupRequest.setUuid(UUID.randomUUID().toString());
                 })
+                .marshal().json(JsonLibrary.Jackson)
                 .setHeader(KafkaConstants.KEY, constant("Signup"))
                 .to("kafka:signup")
+                .unmarshal().json(JsonLibrary.Jackson, SignupRequest.class)
                 .log("The signup message[${body}] was successfully sent to kafka")
                 .setBody(simple("${body.uuid}"));
     }
