@@ -31,7 +31,7 @@ public class SignupRouteTest {
     private ObjectMapper objectMapper;
 
     @ClassRule
-    public static EmbeddedKafkaRule embeddedKafka =
+    public static final EmbeddedKafkaRule embeddedKafka =
             new EmbeddedKafkaRule(1, true, "signup");
 
     private TestRestTemplate restTemplate = new TestRestTemplate();
