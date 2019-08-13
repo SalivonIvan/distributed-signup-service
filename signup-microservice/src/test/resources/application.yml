@@ -9,4 +9,8 @@ camel:
 
            port: 8080
         kafka:
-            brokers: localhost:9092
+            brokers: ${spring.embedded.kafka.brokers}
+#kafka:
+#  bootstrap-servers: ${spring.embedded.kafka.brokers}
+#  topic:
+#    receiver: signup

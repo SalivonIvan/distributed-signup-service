@@ -1,4 +1,4 @@
-package io.newage.signup.domain;
+package io.newage.signup.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
