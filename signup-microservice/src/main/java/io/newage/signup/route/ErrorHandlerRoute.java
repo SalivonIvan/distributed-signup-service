@@ -14,7 +14,7 @@ import static io.newage.signup.model.ErrorConstant.ERR_VALIDATION;
 @Component
 public class ErrorHandlerRoute extends RouteBuilder {
 
-    public static final String ERROR_HANDLER_URI = "direct:errorHandler";
+    static final String ERROR_HANDLER_URI = "direct:errorHandler";
 
     @Override
     public void configure() throws Exception {
