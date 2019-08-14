@@ -1,0 +1,6 @@
+camel:
+    component:
+
+        kafka:
+            brokers: ${spring.embedded.kafka.brokers}
+            consumer-group-id: persistence-test

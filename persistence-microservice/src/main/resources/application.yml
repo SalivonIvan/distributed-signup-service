@@ -6,3 +6,8 @@ camel:
     component:
         kafka:
             brokers: localhost:9092
+            consumer-group-id: persistence
+
+mongo:
+   port: 27017
+   host: localhost
