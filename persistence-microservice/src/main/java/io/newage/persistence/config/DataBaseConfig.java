@@ -1,21 +1,22 @@
 package io.newage.persistence.config;
 
 import com.mongodb.MongoClient;
-import org.apache.camel.PropertyInject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
+@Profile("dev")
 @Configuration
 public class DataBaseConfig {
 
-    @PropertyInject(value = "mongo.port", defaultValue = "27017")
+    @Value("${mongo.port}")
     private int port;
-    @PropertyInject(value = "mongo.host", defaultValue = "localhost")
+    @Value("${mongo.host}")
     private String host;
 
     @Bean(name = "mongoClient")
     public MongoClient getMongoClient() {
-        MongoClient mongoClient = new MongoClient(host,port);
-        return mongoClient;
+        return new MongoClient(host, port);
     }
 }
