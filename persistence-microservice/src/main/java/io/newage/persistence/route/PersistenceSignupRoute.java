@@ -15,13 +15,14 @@ public class PersistenceSignupRoute extends RouteBuilder {
         onException(Exception.class).handled(true).to(ErrorHandlerRoute.ERROR_HANDLER_URI);
 
         from("kafka:" + SIGNUP + "?groupId={{camel.component.kafka.consumer-group-id}}")
-                .routeId(this.getClass().getName())
-                .log("Message received from Kafka : ${body}")
+                .routeId(this.getClass().getSimpleName())
+                .log("Message received from Kafka")
                 .log("    TOPIC: ${headers[kafka.TOPIC]}")
                 .log("    PARTITION: ${headers[kafka.PARTITION]}")
                 .log("    OFFSET: ${headers[kafka.OFFSET]}")
                 .log("    KEY: ${headers[kafka.KEY]}")
                 .convertBodyTo(DBObject.class)
-                .to("mongodb:mongoClient?database=persistence&collection=profile&operation=save");
+                .to("mongodb:mongoClient?database=persistence&collection=profile&operation=save")
+                .log("Profile[${headers[CamelMongoOid]}] was saving to BD");
     }
 }

@@ -36,7 +36,7 @@ public class SignupRoute extends RouteBuilder {
                 .to(PROCESS_SIGNUP_URI);
 
         from(PROCESS_SIGNUP_URI)
-                .routeId(this.getClass().getName())
+                .routeId(this.getClass().getSimpleName())
                 .to(BEAN_VALIDATOR_URI)
                 .log("REST request to process the signup message[${body}]")
                 .process(exchange -> {
