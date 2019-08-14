@@ -1,4 +1,4 @@
-package io.newage.signup.route;
+package io.newage.signup.constant;
 
 /**
  * @author ivan

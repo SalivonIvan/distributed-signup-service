@@ -6,6 +6,7 @@ import io.newage.signup.SignupApp;
 import io.newage.signup.model.ErrorConstant;
 import io.newage.signup.model.ErrorInfo;
 import io.newage.signup.model.SignupRequest;
+import org.apache.camel.PropertyInject;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,18 +16,21 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SignupApp.class)
+@DirtiesContext
 public class SignupRouteTest {
 
-    private static final String SIGNUP_URI = "http://localhost:8080/api/signup";
     private static final String TEST_EMAIL = "test@com.ua";
     private static final String TEST_PASSWORD = "123456";
 
+    @PropertyInject(value = "camel.component.restlet.port")
+    private int port;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -65,7 +69,7 @@ public class SignupRouteTest {
     }
 
     private <T> ResponseEntity<T> invokeSignup(SignupRequest signupRequest, Class<T> clazz) throws JsonProcessingException {
-        return restTemplate.postForEntity(SIGNUP_URI, objectMapper.writeValueAsString(signupRequest), clazz);
+        return restTemplate.postForEntity("http://localhost:"+port+"/api/signup", objectMapper.writeValueAsString(signupRequest), clazz);
     }
 
     private void validateResponseBadRequest(ResponseEntity<ErrorInfo> response) {

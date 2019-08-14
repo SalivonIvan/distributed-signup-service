@@ -14,14 +14,14 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(of = {"uuid", "email"})
+@ToString(of = {"_id", "email"})
 public class SignupRequest implements Serializable {
 
     @ApiModelProperty(hidden = true)
     private static final long serialVersionUID = -5351304218739402635L;
 
     @ApiModelProperty(hidden = true)
-    private String uuid;
+    private String _id;
 
     @NotBlank
     @ApiModelProperty(example = "test@test.com", required = true, value = "The value is email.")
