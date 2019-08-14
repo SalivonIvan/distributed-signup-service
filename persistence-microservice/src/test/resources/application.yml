@@ -4,3 +4,6 @@ camel:
         kafka:
             brokers: ${spring.embedded.kafka.brokers}
             consumer-group-id: persistence-test
+
+mongo:
+   host: localhost
