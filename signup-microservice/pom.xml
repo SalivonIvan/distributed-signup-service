@@ -164,6 +164,48 @@
 
                 <configuration>
                     <images>
+
+                        <image>
+                            <name>kafka</name>
+                            <alias>kafka</alias>
+                            <build>
+                                <from>spotify/kafka</from>
+                                <tags>
+                                    <tag>${project.version}</tag>
+                                    <tag>latest</tag>
+                                </tags>
+                                <ports>
+                                    <port>2181</port>
+                                    <port>9092</port>
+                                </ports>
+                            </build>
+                            <run>
+                                <namingStrategy>alias</namingStrategy>
+                                <hostname>kafka</hostname>
+                                <env>
+                                    <ADVERTISED_PORT>9092</ADVERTISED_PORT>
+                                    <!-- Change this with your machine domain name -->
+                                    <ADVERTISED_HOST>???</ADVERTISED_HOST>
+                                    <AUTO_CREATE_TOPICS>true</AUTO_CREATE_TOPICS>
+                                </env>
+                                <ports>
+                                    <port>2181:2181</port>
+                                    <port>9092:9092</port>
+                                </ports>
+                                <log>
+                                    <enabled>true</enabled>
+                                    <color>red</color>
+                                    <driver>
+                                        <name>json-file</name>
+                                        <opts>
+                                            <max-size>10m</max-size>
+                                            <max-file>5</max-file>
+                                        </opts>
+                                    </driver>
+                                </log>
+                            </run>
+                        </image>
+
                         <image>
                             <name>signup-microservice:${project.version}</name>
                             <alias>signup-microservice</alias>
@@ -175,6 +217,13 @@
                                 <cmd>java -jar maven/${project.name}-${project.version}.jar</cmd>
                             </build>
                             <run>
+                                <namingStrategy>alias</namingStrategy>
+                                <env>
+                                    <camel.component.kafka.brokers>kafka:9092</camel.component.kafka.brokers>
+                                </env>
+                                <links>
+                                    <link>kafka:kafka</link>
+                                </links>
                                 <ports>
                                     <port>8080:8080</port>
                                 </ports>

@@ -19,7 +19,9 @@ public class ErrorHandlerRoute extends RouteBuilder {
     @Override
     public void configure() throws Exception {
 
-        from(ERROR_HANDLER_URI).routeId(ErrorHandlerRoute.class.getName())
+        from(ERROR_HANDLER_URI).routeId(ErrorHandlerRoute.class.getSimpleName())
+                .log("${messageHistory}")
+                .log("${exception.stacktrace}")
                 .log(LoggingLevel.ERROR, "Route error [${exception.message}]")
                 .choice()
                 .when(exchange -> exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Throwable.class) instanceof ValidationException)
