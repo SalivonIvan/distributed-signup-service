@@ -19,7 +19,7 @@ public class SignupRoute extends RouteBuilder {
 
     private static final String PROCESS_SIGNUP_URI = "direct:process-signup";
     private static final String BEAN_VALIDATOR_URI = "bean-validator://signup";
-    private static final String PREPARE_MESSAGE_TO_KAFKA_URI = "direct:prepareMessageToKafka";
+    private static final String SEND_MESSAGE_TO_KAFKA_URI = "direct:prepareMessageToKafka";
     private static final String KAFKA_SIGNUP_KEY = "SIGNUP";
 
     @Override
@@ -44,11 +44,11 @@ public class SignupRoute extends RouteBuilder {
                     SignupRequest signupRequest = exchange.getIn().getBody(SignupRequest.class);
                     signupRequest.set_id(UUID.randomUUID().toString());
                 })
-                .enrich(PREPARE_MESSAGE_TO_KAFKA_URI, new AfterKafkaAggregate())
+                .enrich(SEND_MESSAGE_TO_KAFKA_URI, new AfterKafkaAggregate())
                 .log("The signup message[${body}] was successfully sent to kafka")
                 .setBody(simple("${body.get_id}"));
 
-        from(PREPARE_MESSAGE_TO_KAFKA_URI)
+        from(SEND_MESSAGE_TO_KAFKA_URI)
                 .marshal().json(JsonLibrary.Jackson)
                 .setHeader(KafkaConstants.KEY, constant(KAFKA_SIGNUP_KEY))
                 .to("kafka:" + Topic.SIGNUP);
