@@ -17,6 +17,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <camel-version>2.24.1</camel-version>
+        <spring-boot-version>2.1.4.RELEASE</spring-boot-version>
     </properties>
 
     <!-- Spring-Boot and Camel BOM -->
@@ -25,7 +27,7 @@
             <dependency>
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-parent</artifactId>
-                <version>2.24.1</version>
+                <version>${camel-version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -33,7 +35,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.1.4.RELEASE</version>
+                <version>${spring-boot-version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -147,7 +149,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!--<version>${spring-boot-version}</version>-->
+                <version>${spring-boot-version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -163,46 +165,67 @@
                 <version>0.31.0</version>
 
                 <configuration>
+                    <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
                     <images>
-
                         <image>
-                            <name>kafka</name>
-                            <alias>kafka</alias>
+                            <name>zookeeper</name>
+                            <alias>zookeeper</alias>
                             <build>
-                                <from>spotify/kafka</from>
+                                <from>confluentinc/cp-zookeeper</from>
                                 <tags>
                                     <tag>${project.version}</tag>
                                     <tag>latest</tag>
                                 </tags>
-                                <ports>
-                                    <port>2181</port>
-                                    <port>9092</port>
-                                </ports>
                             </build>
                             <run>
+                                <network>
+                                    <mode>custom</mode>
+                                    <name>signup-test</name>
+                                    <alias>zookeeper</alias>
+                                </network>
                                 <namingStrategy>alias</namingStrategy>
-                                <hostname>kafka</hostname>
+                                <hostname>zookeeper</hostname>
                                 <env>
-                                    <ADVERTISED_PORT>9092</ADVERTISED_PORT>
-                                    <!-- Change this with your machine domain name -->
-                                    <ADVERTISED_HOST>???</ADVERTISED_HOST>
-                                    <AUTO_CREATE_TOPICS>true</AUTO_CREATE_TOPICS>
+                                    <ZOOKEEPER_CLIENT_PORT>2181</ZOOKEEPER_CLIENT_PORT>
+                                    <ZOOKEEPER_TICK_TIME>2000</ZOOKEEPER_TICK_TIME>
                                 </env>
                                 <ports>
                                     <port>2181:2181</port>
+                                </ports>
+                            </run>
+                        </image>
+                        <image>
+                            <name>kafka</name>
+                            <alias>kafka</alias>
+                            <build>
+                                <from>confluentinc/cp-kafka</from>
+                                <tags>
+                                    <tag>${project.version}</tag>
+                                    <tag>latest</tag>
+                                </tags>
+                            </build>
+                            <run>
+                                <dependsOn>
+                                    <container>zookeeper</container>
+                                </dependsOn>
+                                <network>
+                                    <mode>custom</mode>
+                                    <name>signup-test</name>
+                                    <alias>kafka</alias>
+                                </network>
+                                <namingStrategy>alias</namingStrategy>
+                                <hostname>kafka</hostname>
+                                <env>
+                                    <KAFKA_BROKER_ID>1</KAFKA_BROKER_ID>
+                                    <KAFKA_ZOOKEEPER_CONNECT>zookeeper:2181</KAFKA_ZOOKEEPER_CONNECT>
+                                    <KAFKA_ADVERTISED_LISTENERS>PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092</KAFKA_ADVERTISED_LISTENERS>
+                                    <KAFKA_LISTENER_SECURITY_PROTOCOL_MAP>PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT</KAFKA_LISTENER_SECURITY_PROTOCOL_MAP>
+                                    <KAFKA_INTER_BROKER_LISTENER_NAME>PLAINTEXT</KAFKA_INTER_BROKER_LISTENER_NAME>
+                                    <KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR>1</KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR>
+                                </env>
+                                <ports>
                                     <port>9092:9092</port>
                                 </ports>
-                                <log>
-                                    <enabled>true</enabled>
-                                    <color>red</color>
-                                    <driver>
-                                        <name>json-file</name>
-                                        <opts>
-                                            <max-size>10m</max-size>
-                                            <max-file>5</max-file>
-                                        </opts>
-                                    </driver>
-                                </log>
                             </run>
                         </image>
 
@@ -217,19 +240,21 @@
                                 <cmd>java -jar maven/${project.name}-${project.version}.jar</cmd>
                             </build>
                             <run>
+                                <network>
+                                    <mode>custom</mode>
+                                    <name>signup-test</name>
+                                    <alias>signup-microservice</alias>
+                                </network>
                                 <namingStrategy>alias</namingStrategy>
                                 <env>
-                                    <camel.component.kafka.brokers>kafka:9092</camel.component.kafka.brokers>
+                                    <camel.component.kafka.brokers>kafka:29092</camel.component.kafka.brokers>
                                 </env>
-                                <links>
-                                    <link>kafka:kafka</link>
-                                </links>
+                                <dependsOn>
+                                    <container>kafka</container>
+                                </dependsOn>
                                 <ports>
                                     <port>8080:8080</port>
                                 </ports>
-                                <!--<wait>-->
-                                    <!--<log>START Signup APP!</log>-->
-                                <!--</wait>-->
                             </run>
                         </image>
                     </images>
