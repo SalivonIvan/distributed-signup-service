@@ -10,11 +10,9 @@ public class RestletComponentConfig extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         restConfiguration("restlet")
-                .bindingMode(RestBindingMode.json)
                 .dataFormatProperty("prettyPrint", "true")
                 .enableCORS(true)
                 .contextPath("{{camel.component.restlet.context-path}}")
-                // turn on swagger api-doc
                 .apiContextPath("{{camel.component.restlet.api-context-path}}")
                 .apiProperty("api.title", "{{camel.component.restlet.api-title}}")
                 .apiProperty("api.version", "{{camel.component.restlet.api-version}}");

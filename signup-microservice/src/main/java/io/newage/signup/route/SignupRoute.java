@@ -31,12 +31,13 @@ public class SignupRoute extends RouteBuilder {
                 .consumes(MediaType.APPLICATION_JSON.getName())
                 .produces(MediaType.APPLICATION_JSON.getName())
 
-                .post().description("signup users").type(SignupRequest.class)
+                .post().description("signup users").type(SignupRequest.class).outType(String.class)
                 .responseMessage().code(200).message("Signup successfully.").endResponseMessage()
                 .to(PROCESS_SIGNUP_URI);
 
         from(PROCESS_SIGNUP_URI)
                 .routeId(this.getClass().getSimpleName())
+                .unmarshal().json(JsonLibrary.Jackson, SignupRequest.class)
                 .to(BEAN_VALIDATOR_URI)
                 .log("REST request to process the signup message[${body}]")
                 .process(exchange -> {
