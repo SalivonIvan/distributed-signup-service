@@ -1,6 +1,7 @@
 package io.newage.persistence;
 
 import io.newage.persistence.config.DataBaseConfigTest;
+import io.newage.persistence.constant.Topic;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +19,7 @@ public class PersistenceAppTest {
 
     @ClassRule
     public static final EmbeddedKafkaRule embeddedKafka =
-            new EmbeddedKafkaRule(1, true, "signup");
+            new EmbeddedKafkaRule(1, true, Topic.SIGNUP);
 
     @Test
     public void testRunApp() throws Exception {

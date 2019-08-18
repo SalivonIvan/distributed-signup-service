@@ -17,13 +17,19 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.concurrent.TimeUnit;
+
 import static io.newage.persistence.constant.Topic.SIGNUP;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {PersistenceApp.class, DataBaseConfigTest.class})
 @ActiveProfiles("test")
 @DirtiesContext
 public class PersistenceSignupRouteTest {
+
+    private static final String DEFAULT_VALUE_BODY = "{\"_id\":\"123\",\"email\":\"test@test.com\",\"password\":\"12345678\"}";
+    private static final String EXPECTED_VALUE_BODY = "[{ \"_id\" : \"123\", \"email\" : \"test@test.com\", \"password\" : \"12345678\" }]";
 
     @ClassRule
     public static final EmbeddedKafkaRule embeddedKafka =
@@ -42,7 +48,8 @@ public class PersistenceSignupRouteTest {
                         .to("kafka:" + SIGNUP);
 
                 from("direct:findAll")
-                        .to("mongodb:mongoClient?database=persistence&collection=profile&operation=findAll");
+                        .to("mongodb:mongoClient?database=persistence&collection=profile&operation=findAll")
+                        .log("BODY - [${body}]");
             }
         });
     }
@@ -50,9 +57,11 @@ public class PersistenceSignupRouteTest {
     @Test
     public void testSendMessageToSignTopic() throws Exception {
         ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
-        producerTemplate.sendBody("direct:sendToSignupTopic"
-                , "{\"_id\":\"123\",\"email\":\"test@test.com\",\"password\":\"12345678\"}");
-        producerTemplate.requestBody("direct:findAll", null, String.class);
+        producerTemplate.requestBody("direct:sendToSignupTopic", DEFAULT_VALUE_BODY);
+        TimeUnit.SECONDS.sleep(1);
+        String response = producerTemplate.requestBody("direct:findAll", null, String.class);
+        assertThat(response).isNotBlank();
+        assertThat(response).isEqualTo(EXPECTED_VALUE_BODY);
     }
 
 }
