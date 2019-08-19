@@ -40,6 +40,7 @@ public class PersistenceSignupRouteTest {
 
     @Before
     public void init() throws Exception {
+        TimeUnit.SECONDS.sleep(2);
         camelContext.addRoutes(new RouteBuilder() {
             @Override
             public void configure() throws Exception {
