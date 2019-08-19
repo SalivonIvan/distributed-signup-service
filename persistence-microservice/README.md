@@ -1,5 +1,6 @@
 Persistence microservice
 ===========================
+Read KAFKA topic and persist data into persistence storage.
 
 **Prerequisites**:
 

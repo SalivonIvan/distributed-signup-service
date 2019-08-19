@@ -1,5 +1,9 @@
 Signup microservice
 ===========================
+Has available REST API for external clients.
+After run app swagger API DOC allowed by  url:
+
+    http://localhost:8080/api-doc
 
 **Prerequisites**:
 
