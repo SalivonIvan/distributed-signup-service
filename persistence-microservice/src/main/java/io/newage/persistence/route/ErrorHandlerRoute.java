@@ -13,6 +13,7 @@ public class ErrorHandlerRoute extends RouteBuilder {
     public void configure() throws Exception {
 
         from(ERROR_HANDLER_URI).routeId(ErrorHandlerRoute.class.getName())
+                .log("${messageHistory}")
                 .log(LoggingLevel.ERROR, "Route error [${exception.message}]");
     }
 }
